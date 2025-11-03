@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Roofing Progress Report</title>
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* iOS tap highlight off */
+    input, textarea, select, button { -webkit-tap-highlight-color: transparent; }
+  </style>
+  <!-- EmailJS SDK (optional email sending without a backend) -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-3xl mx-auto p-4 sm:p-6">
+    <header class="mb-4 sm:mb-6">
+      <h1 class="text-2xl font-semibold">Daily Roofing Progress Report</h1>
+      <p class="text-sm text-gray-600">Mobile‑friendly log with dropdowns, text fields, save, and email.</p>
+    </header>
+
+    <!-- STATUS BANNER -->
+    <div id="status" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+    <form id="reportForm" class="space-y-6">
+      <!-- Project / Date / Weather -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1" for="projectName">Project Name</label>
+          <input id="projectName" name="projectName" type="text" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., King Plow Roof Rehab" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="projectAddress">Project Address</label>
+          <input id="projectAddress" name="projectAddress" type="text" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Street, City, ST" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="date">Date</label>
+          <input id="date" name="date" type="date" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" for="weather">Weather</label>
+            <input id="weather" name="weather" type="text" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Sunny / Overcast / Rain" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" for="temp">Temp High / Low (°F)</label>
+            <input id="temp" name="temp" type="text" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="85 / 62" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Crew basics (reduced as requested) -->
+      <section class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1" for="crewCount">Total Crew Members</label>
+          <input id="crewCount" name="crewCount" inputmode="numeric" pattern="[0-9]*" type="text" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., 6" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" for="startTime">Start</label>
+            <input id="startTime" name="startTime" type="time" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" for="endTime">End</label>
+            <input id="endTime" name="endTime" type="time" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Work Performed: dynamic rows -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Work Performed</h2>
+          <button type="button" id="addWorkRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Area / Roof Section</th>
+                <th class="p-2 text-left">Description</th>
+                <th class="p-2 text-left">Square Footage</th>
+                <th class="p-2 text-left">Notes</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="workBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Materials Installed: dynamic rows -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Materials Installed</h2>
+          <button type="button" id="addMatRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Material Type</th>
+                <th class="p-2 text-left">Location on Roof</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="matBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Equipment and Deliveries -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Equipment and Deliveries</h2>
+          <button type="button" id="addEquipRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Item</th>
+                <th class="p-2 text-left">Description</th>
+                <th class="p-2 text-left">Time Onsite</th>
+                <th class="p-2 text-left">Time Offsite</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="equipBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Issues / Delays with dropdown types -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Issues / Delays</h2>
+          <button type="button" id="addIssueRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Issue Type</th>
+                <th class="p-2 text-left">Description</th>
+                <th class="p-2 text-left">Location</th>
+                <th class="p-2 text-left">Resolution / Action Needed</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="issueBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Safety and Site Conditions -->
+      <section class="grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" for="toolboxTalk">Toolbox Talk Conducted?</label>
+            <select id="toolboxTalk" name="toolboxTalk" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" for="ppe">PPE Compliance</label>
+            <select id="ppe" name="ppe" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="incidents">Incidents / Near Misses</label>
+          <textarea id="incidents" name="incidents" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2" placeholder="Briefly describe any incidents or near misses"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="housekeeping">Housekeeping Status</label>
+          <select id="housekeeping" name="housekeeping" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Select</option>
+            <option>Satisfactory</option>
+            <option>Needs Improvement</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Photos helper note -->
+      <section>
+        <label class="block text-sm font-medium mb-1">Photos</label>
+        <p class="text-sm text-gray-600">Take and attach photos via your normal workflow. This form records references and context. Optional: paste shared links in Notes fields above.</p>
+      </section>
+
+      <!-- Comments -->
+      <section>
+        <label class="block text-sm font-medium mb-1" for="comments">Superintendent Notes / Additional Comments</label>
+        <textarea id="comments" name="comments" rows="4" class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Anything else noteworthy"></textarea>
+      </section>
+
+      <!-- Actions -->
+      <section class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        <div class="flex gap-2">
+          <button type="button" id="saveLocal" class="px-4 py-2 rounded-lg bg-gray-800 text-white">Save Draft (Device)</button>
+          <button type="button" id="exportJson" class="px-4 py-2 rounded-lg bg-gray-200">Export JSON</button>
+        </div>
+        <div class="flex gap-2">
+          <input id="recipientEmail" type="email" placeholder="Send to email (optional)" class="flex-1 sm:w-64 rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <button type="button" id="sendEmailBtn" class="px-4 py-2 rounded-lg bg-blue-600 text-white">Email Report</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white">Finalize & Download PDF</button>
+        </div>
+      </section>
+    </form>
+
+    <footer class="mt-8 text-xs text-gray-500">
+      <p>Tip: Install as an app from your mobile browser for a faster daily flow.</p>
+    </footer>
+  </div>
+
+  <script>
+    // ---------- Helpers ----------
+    const statusEl = document.getElementById('status');
+    function flashStatus(msg, ok=true) {
+      statusEl.textContent = msg;
+      statusEl.className = `mb-4 p-3 rounded-lg text-sm ${ok ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`;
+      statusEl.classList.remove('hidden');
+      setTimeout(()=> statusEl.classList.add('hidden'), 4000);
+    }
+
+    function makeCellInput(ph='') {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = ph;
+      input.className = 'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+      return input;
+    }
+    function makeCellTextarea(ph='') {
+      const ta = document.createElement('textarea');
+      ta.rows = 2;
+      ta.placeholder = ph;
+      ta.className = 'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+      return ta;
+    }
+    function makeSelect(options) {
+      const sel = document.createElement('select');
+      sel.className = 'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+      const empty = document.createElement('option'); empty.value=''; empty.textContent='Select'; sel.appendChild(empty);
+      options.forEach(o=>{ const opt=document.createElement('option'); opt.textContent=o; sel.appendChild(opt); });
+      return sel;
+    }
+    function makeRemoveBtn() {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = 'Remove';
+      btn.className = 'text-xs px-2 py-1 rounded bg-red-600 text-white';
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); btn.closest('tr').remove(); saveDraftToLocal(); });
+      return btn;
+    }
+
+    // ---------- Dynamic tables ----------
+    const workBody = document.getElementById('workBody');
+    const matBody  = document.getElementById('matBody');
+    const equipBody= document.getElementById('equipBody');
+    const issueBody= document.getElementById('issueBody');
+
+    function addWorkRow(data={}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const area = makeCellInput('e.g., Area A / West Parapet'); area.value = data.area||''; tr.children[0].appendChild(area);
+      const desc = makeCellTextarea('Brief description'); desc.value = data.desc||''; tr.children[1].appendChild(desc);
+      const sf   = makeCellInput('e.g., 3,200'); sf.inputMode='numeric'; sf.value = data.sf||''; tr.children[2].appendChild(sf);
+      const note = makeCellTextarea('Notes'); note.value = data.note||''; tr.children[3].appendChild(note);
+      tr.children[4].appendChild(makeRemoveBtn());
+      workBody.appendChild(tr);
+    }
+
+    function addMatRow(data={}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const mat = makeCellInput('e.g., 60‑mil TPO / Walkpads / Edge Metal'); mat.value = data.mat||''; tr.children[0].appendChild(mat);
+      const loc = makeCellInput('e.g., South Field / Penthouse'); loc.value = data.loc||''; tr.children[1].appendChild(loc);
+      tr.children[2].appendChild(makeRemoveBtn());
+      matBody.appendChild(tr);
+    }
+
+    function addEquipRow(data={}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const item = makeCellInput('Forklift / Dumpster / Delivery'); item.value = data.item||''; tr.children[0].appendChild(item);
+      const desc = makeCellTextarea('Details'); desc.value = data.desc||''; tr.children[1].appendChild(desc);
+      const on   = makeCellInput('08:30'); on.value = data.on||''; tr.children[2].appendChild(on);
+      const off  = makeCellInput('15:00'); off.value = data.off||''; tr.children[3].appendChild(off);
+      tr.children[4].appendChild(makeRemoveBtn());
+      equipBody.appendChild(tr);
+    }
+
+    function addIssueRow(data={}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const type = makeSelect(['Weather','Material','Coordination','Safety','QA/QC','Owner‑direction','Other']);
+      type.value = data.type||''; tr.children[0].appendChild(type);
+      const desc = makeCellTextarea('What happened?'); desc.value = data.desc||''; tr.children[1].appendChild(desc);
+      const loc  = makeCellInput('Where on the roof?'); loc.value = data.loc||''; tr.children[2].appendChild(loc);
+      const res  = makeCellTextarea('Resolution or action needed'); res.value = data.res||''; tr.children[3].appendChild(res);
+      tr.children[4].appendChild(makeRemoveBtn());
+      issueBody.appendChild(tr);
+    }
+
+    document.getElementById('addWorkRow').addEventListener('click', ()=>{ addWorkRow(); saveDraftToLocal(); });
+    document.getElementById('addMatRow').addEventListener('click', ()=>{ addMatRow(); saveDraftToLocal(); });
+    document.getElementById('addEquipRow').addEventListener('click', ()=>{ addEquipRow(); saveDraftToLocal(); });
+    document.getElementById('addIssueRow').addEventListener('click', ()=>{ addIssueRow(); saveDraftToLocal(); });
+
+    // Seed one empty row for each section
+    addWorkRow(); addMatRow(); addEquipRow(); addIssueRow();
+
+    // ---------- Local draft save/load ----------
+    const FORM_KEY = 'roofing_daily_report_draft_v1';
+
+    function getTableData(tbody, schema) {
+      const rows = [];
+      [...tbody.children].forEach(tr=>{
+        const obj = {};
+        schema.forEach((field, idx)=>{
+          const cell = tr.children[idx].firstElementChild;
+          obj[field] = cell ? (cell.value || '') : '';
+        });
+        rows.push(obj);
+      });
+      return rows;
+    }
+
+    function saveDraftToLocal() {
+      const data = {
+        projectName: projectName.value,
+        projectAddress: projectAddress.value,
+        date: date.value,
+        weather: weather.value,
+        temp: temp.value,
+        crewCount: crewCount.value,
+        startTime: startTime.value,
+        endTime: endTime.value,
+        work: getTableData(workBody, ['area','desc','sf','note']),
+        materials: getTableData(matBody, ['mat','loc']),
+        equipment: getTableData(equipBody, ['item','desc','on','off']),
+        issues: getTableData(issueBody, ['type','desc','loc','res']),
+        toolboxTalk: toolboxTalk.value,
+        ppe: ppe.value,
+        incidents: incidents.value,
+        housekeeping: housekeeping.value,
+        comments: comments.value
+      };
+      localStorage.setItem(FORM_KEY, JSON.stringify(data));
+      flashStatus('Draft saved to this device.');
+    }
+
+    function loadDraftFromLocal() {
+      const raw = localStorage.getItem(FORM_KEY);
+      if(!raw) return;
+      try {
+        const d = JSON.parse(raw);
+        projectName.value = d.projectName||'';
+        projectAddress.value = d.projectAddress||'';
+        date.value = d.date||'';
+        weather.value = d.weather||'';
+        temp.value = d.temp||'';
+        crewCount.value = d.crewCount||'';
+        startTime.value = d.startTime||'';
+        endTime.value = d.endTime||'';
+
+        // rebuild tables
+        workBody.innerHTML=''; (d.work||[]).forEach(r=>addWorkRow(r)); if((d.work||[]).length===0) addWorkRow();
+        matBody.innerHTML=''; (d.materials||[]).forEach(r=>addMatRow(r)); if((d.materials||[]).length===0) addMatRow();
+        equipBody.innerHTML=''; (d.equipment||[]).forEach(r=>addEquipRow(r)); if((d.equipment||[]).length===0) addEquipRow();
+        issueBody.innerHTML=''; (d.issues||[]).forEach(r=>addIssueRow(r)); if((d.issues||[]).length===0) addIssueRow();
+
+        toolboxTalk.value = d.toolboxTalk||'';
+        ppe.value = d.ppe||'';
+        incidents.value = d.incidents||'';
+        housekeeping.value = d.housekeeping||'';
+        comments.value = d.comments||'';
+        flashStatus('Draft loaded from this device.');
+      } catch(e){ console.error(e); }
+    }
+
+    document.getElementById('saveLocal').addEventListener('click', saveDraftToLocal);
+    window.addEventListener('beforeunload', saveDraftToLocal);
+    loadDraftFromLocal();
+
+    // ---------- Export JSON ----------
+    document.getElementById('exportJson').addEventListener('click', ()=>{
+      saveDraftToLocal();
+      const blob = new Blob([localStorage.getItem(FORM_KEY)||'{}'], {type:'application/json'});
+      const a = document.createElement('a');
+      const dt = new Date().toISOString().slice(0,10);
+      a.href = URL.createObjectURL(blob);
+      a.download = `roofing_report_${date.value||dt}.json`;
+      a.click();
+    });
+
+    // ---------- EmailJS (no-backend email) ----------
+    const emailInput = document.getElementById('recipientEmail');
+    const sendBtn = document.getElementById('sendEmailBtn');
+
+    // Initialize EmailJS if user fills config in window.EMAILJS_* variables
+    // Set these in a small inline script or by editing here once you have IDs from emailjs.com
+    window.EMAILJS_SERVICE_ID = window.EMAILJS_SERVICE_ID || '';
+    window.EMAILJS_TEMPLATE_ID = window.EMAILJS_TEMPLATE_ID || '';
+    window.EMAILJS_PUBLIC_KEY  = window.EMAILJS_PUBLIC_KEY  || '';
+    if(window.EMAILJS_PUBLIC_KEY){ emailjs.init(window.EMAILJS_PUBLIC_KEY); }
+
+    sendBtn.addEventListener('click', async ()=>{
+      const to = emailInput.value.trim();
+      if(!to){ flashStatus('Enter a recipient email.', false); return; }
+      // Prepare payload
+      saveDraftToLocal();
+      const data = JSON.parse(localStorage.getItem(FORM_KEY) || '{}');
+      const summary = makePlainTextSummary(data);
+
+      if(window.EMAILJS_SERVICE_ID && window.EMAILJS_TEMPLATE_ID && window.EMAILJS_PUBLIC_KEY){
+        try {
+          await emailjs.send(window.EMAILJS_SERVICE_ID, window.EMAILJS_TEMPLATE_ID, {
+            to_email: to,
+            subject: `Daily Roofing Report – ${data.projectName || ''} – ${data.date || ''}`,
+            message: summary
+          });
+          flashStatus('Email sent via EmailJS.');
+        } catch(err){
+          console.error(err);
+          flashStatus('EmailJS error. Check configuration or use your mail client.', false);
+          mailtoFallback(to, summary);
+        }
+      } else {
+        // Fallback: open mail client
+        mailtoFallback(to, summary);
+      }
+    });
+
+    function mailtoFallback(to, body){
+      const subject = encodeURIComponent(`Daily Roofing Report – ${projectName.value} – ${date.value}`);
+      const b = encodeURIComponent(body);
+      window.location.href = `mailto:${encodeURIComponent(to)}?subject=${subject}&body=${b}`;
+      flashStatus('Opening your mail app with the report.');
+    }
+
+    function makePlainTextSummary(d){
+      function rowsToText(rows, headers){
+        return (rows||[]).map(r=> headers.map(h=> `${h}: ${r[h]||''}`).join(' | ')).join('\n');
+      }
+      return [
+        `Project: ${d.projectName || ''}`,
+        `Address: ${d.projectAddress || ''}`,
+        `Date: ${d.date || ''}`,
+        `Weather: ${d.weather || ''} | Temp: ${d.temp || ''}`,
+        `Crew Members: ${d.crewCount || ''} | Start: ${d.startTime || ''} | End: ${d.endTime || ''}`,
+        '',
+        'Work Performed:', rowsToText(d.work, ['area','desc','sf','note']),
+        '',
+        'Materials Installed:', rowsToText(d.materials, ['mat','loc']),
+        '',
+        'Equipment & Deliveries:', rowsToText(d.equipment, ['item','desc','on','off']),
+        '',
+        'Issues / Delays:', rowsToText(d.issues, ['type','desc','loc','res']),
+        '',
+        `Toolbox Talk: ${d.toolboxTalk || ''} | PPE: ${d.ppe || ''} | Housekeeping: ${d.housekeeping || ''}`,
+        `Incidents: ${d.incidents || ''}`,
+        '',
+        `Notes: ${d.comments || ''}`
+      ].join('\n');
+    }
+
+    // ---------- Finalize & Download PDF ----------
+    // Uses the browser print-to-PDF. We render a clean summary view.
+    const form = document.getElementById('reportForm');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      saveDraftToLocal();
+      const data = JSON.parse(localStorage.getItem(FORM_KEY)||'{}');
+      const printable = window.open('', '_blank');
+      printable.document.write(`<!doctype html><html><head><meta charset='utf-8'><title>Report</title>
+        <style>
+          body{ font-family: ui-sans-serif, system-ui, -apple-system; padding: 24px; color:#111827; }
+          h1{ font-size: 20px; margin: 0 0 12px; }
+          h2{ font-size: 16px; margin: 18px 0 8px; }
+          table{ width:100%; border-collapse: collapse; font-size: 12px; }
+          th, td{ border: 1px solid #e5e7eb; padding: 6px; text-align: left; vertical-align: top; }
+          .meta{ margin-bottom: 8px; }
+        </style></head><body>`);
+      printable.document.write(`<h1>Daily Roofing Progress Report</h1>`);
+      printable.document.write(`<div class='meta'><strong>Project:</strong> ${escapeHtml(data.projectName||'')} &nbsp; <strong>Date:</strong> ${escapeHtml(data.date||'')}</div>`);
+      printable.document.write(`<div class='meta'><strong>Address:</strong> ${escapeHtml(data.projectAddress||'')}</div>`);
+      printable.document.write(`<div class='meta'><strong>Weather:</strong> ${escapeHtml(data.weather||'')} &nbsp; <strong>Temp:</strong> ${escapeHtml(data.temp||'')}</div>`);
+      printable.document.write(`<div class='meta'><strong>Crew Members:</strong> ${escapeHtml(data.crewCount||'')} &nbsp; <strong>Hours:</strong> ${escapeHtml(data.startTime||'')}–${escapeHtml(data.endTime||'')}</div>`);
+
+      function tableSection(title, headers, rows, keys){
+        printable.document.write(`<h2>${title}</h2><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`);
+        (rows||[]).forEach(r=>{
+          printable.document.write(`<tr>${keys.map(k=>`<td>${escapeHtml(r[k]||'')}</td>`).join('')}</tr>`);
+        });
+        printable.document.write(`</tbody></table>`);
+      }
+      tableSection('Work Performed', ['Area / Roof Section','Description','Square Footage','Notes'], data.work, ['area','desc','sf','note']);
+      tableSection('Materials Installed', ['Material Type','Location on Roof'], data.materials, ['mat','loc']);
+      tableSection('Equipment and Deliveries', ['Item','Description','Time Onsite','Time Offsite'], data.equipment, ['item','desc','on','off']);
+      tableSection('Issues / Delays', ['Issue Type','Description','Location','Resolution / Action Needed'], data.issues, ['type','desc','loc','res']);
+
+      printable.document.write(`<h2>Safety and Site Conditions</h2>`);
+      printable.document.write(`<div class='meta'><strong>Toolbox Talk:</strong> ${escapeHtml(data.toolboxTalk||'')} &nbsp; <strong>PPE:</strong> ${escapeHtml(data.ppe||'')} &nbsp; <strong>Housekeeping:</strong> ${escapeHtml(data.housekeeping||'')}</div>`);
+      printable.document.write(`<div class='meta'><strong>Incidents / Near Misses:</strong> ${escapeHtml(data.incidents||'')}</div>`);
+      printable.document.write(`<h2>Superintendent Notes</h2><div>${escapeHtml(data.comments||'')}</div>`);
+      printable.document.write(`</body></html>`);
+      printable.document.close();
+      printable.focus();
+      printable.print();
+    });
+
+    function escapeHtml(str){
+      return String(str||'').replace(/[&<>\"']/g, s=> ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#39;'}[s]));
+    }
+  </script>
+</body>
+</html>
