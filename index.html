@@ -64,4 +64,735 @@
         <div>
           <label class="block text-sm font-medium mb-1" for="crewCount">Total Crew Members</label>
           <input id="crewCount" name="crewCount" inputmode="numeric" pattern="[0-9]*" type="text"
-                 class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:r
+                 class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                 placeholder="e.g., 6" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" for="startTime">Start</label>
+            <input id="startTime" name="startTime" type="time"
+                   class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" for="endTime">End</label>
+            <input id="endTime" name="endTime" type="time"
+                   class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Work Performed: dynamic rows -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Work Performed</h2>
+          <button type="button" id="addWorkRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Area / Roof Section</th>
+                <th class="p-2 text-left">Description</th>
+                <th class="p-2 text-left">Square Footage</th>
+                <th class="p-2 text-left">Notes</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="workBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Materials Installed: dynamic rows -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Materials Installed</h2>
+          <button type="button" id="addMatRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Material Type</th>
+                <th class="p-2 text-left">Location on Roof</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="matBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Equipment and Deliveries -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Equipment and Deliveries</h2>
+          <button type="button" id="addEquipRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Item</th>
+                <th class="p-2 text-left">Description</th>
+                <th class="p-2 text-left">Time Onsite</th>
+                <th class="p-2 text-left">Time Offsite</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="equipBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Issues / Delays -->
+      <section>
+        <div class="flex items-baseline justify-between mb-2">
+          <h2 class="text-lg font-semibold">Issues / Delays</h2>
+          <button type="button" id="addIssueRow" class="text-sm px-3 py-1.5 rounded-lg bg-blue-600 text-white">Add Row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Issue Type</th>
+                <th class="p-2 text-left">Description</th>
+                <th class="p-2 text-left">Location</th>
+                <th class="p-2 text-left">Resolution / Action Needed</th>
+                <th class="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="issueBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Safety and Site Conditions -->
+      <section class="grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" for="toolboxTalk">Toolbox Talk Conducted?</label>
+            <select id="toolboxTalk" name="toolboxTalk"
+                    class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" for="ppe">PPE Compliance</label>
+            <select id="ppe" name="ppe"
+                    class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="incidents">Incidents / Near Misses</label>
+          <textarea id="incidents" name="incidents" rows="2"
+                    class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Briefly describe any incidents or near misses"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="housekeeping">Housekeeping Status</label>
+          <select id="housekeeping" name="housekeeping"
+                  class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Select</option>
+            <option>Satisfactory</option>
+            <option>Needs Improvement</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Photos helper -->
+      <section>
+        <label class="block text-sm font-medium mb-1">Photos</label>
+        <p class="text-sm text-gray-600">
+          Take and attach photos via your normal workflow. This form records references and context.
+          Optional: paste shared links in Notes fields above.
+        </p>
+      </section>
+
+      <!-- Comments -->
+      <section>
+        <label class="block text-sm font-medium mb-1" for="comments">Superintendent Notes / Additional Comments</label>
+        <textarea id="comments" name="comments" rows="4"
+                  class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Anything else noteworthy"></textarea>
+      </section>
+
+      <!-- Actions -->
+      <section class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        <div class="flex gap-2">
+          <button type="button" id="saveLocal" class="px-4 py-2 rounded-lg bg-gray-800 text-white">
+            Save Draft (Device)
+          </button>
+          <button type="button" id="exportJson" class="px-4 py-2 rounded-lg bg-gray-200">
+            Export JSON
+          </button>
+          <button type="button" id="clearAll" class="px-4 py-2 rounded-lg bg-red-600 text-white">
+            Delete All / Reset
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <input id="recipientEmail" type="email"
+                 placeholder="Send to email (optional)"
+                 class="flex-1 sm:w-64 rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <button type="button" id="sendEmailBtn" class="px-4 py-2 rounded-lg bg-blue-600 text-white">
+            Email Report
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white">
+            Finalize &amp; Download PDF
+          </button>
+        </div>
+      </section>
+    </form>
+
+    <footer class="mt-8 text-xs text-gray-500">
+      <p>Tip: Install as an app from your mobile browser for a faster daily flow.</p>
+    </footer>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const form = document.getElementById('reportForm');
+
+    const workBody  = document.getElementById('workBody');
+    const matBody   = document.getElementById('matBody');
+    const equipBody = document.getElementById('equipBody');
+    const issueBody = document.getElementById('issueBody');
+
+    const projectName     = document.getElementById('projectName');
+    const projectAddress  = document.getElementById('projectAddress');
+    const dateEl          = document.getElementById('date');
+    const weather         = document.getElementById('weather');
+    const temp            = document.getElementById('temp');
+    const crewCount       = document.getElementById('crewCount');
+    const startTime       = document.getElementById('startTime');
+    const endTime         = document.getElementById('endTime');
+    const toolboxTalk     = document.getElementById('toolboxTalk');
+    const ppe             = document.getElementById('ppe');
+    const incidents       = document.getElementById('incidents');
+    const housekeeping    = document.getElementById('housekeeping');
+    const comments        = document.getElementById('comments');
+
+    const emailInput = document.getElementById('recipientEmail');
+    const sendBtn    = document.getElementById('sendEmailBtn');
+
+    function flashStatus(msg, ok = true) {
+      statusEl.textContent = msg;
+      statusEl.className =
+        'mb-4 p-3 rounded-lg text-sm ' +
+        (ok
+          ? 'bg-green-50 text-green-800 border border-green-200'
+          : 'bg-red-50 text-red-800 border border-red-200');
+      statusEl.classList.remove('hidden');
+      setTimeout(() => statusEl.classList.add('hidden'), 4000);
+    }
+
+    function makeCellInput(ph = '') {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = ph;
+      input.className =
+        'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+      return input;
+    }
+
+    function makeCellTextarea(ph = '') {
+      const ta = document.createElement('textarea');
+      ta.rows = 2;
+      ta.placeholder = ph;
+      ta.className =
+        'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+      return ta;
+    }
+
+    function makeSelect(options) {
+      const sel = document.createElement('select');
+      sel.className =
+        'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+      const empty = document.createElement('option');
+      empty.value = '';
+      empty.textContent = 'Select';
+      sel.appendChild(empty);
+      options.forEach(o => {
+        const opt = document.createElement('option');
+        opt.textContent = o;
+        sel.appendChild(opt);
+      });
+      return sel;
+    }
+
+    function makeRemoveBtn() {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = 'Remove';
+      btn.className = 'text-xs px-2 py-1 rounded bg-red-600 text-white';
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        btn.closest('tr').remove();
+        saveDraftToLocal();
+      });
+      return btn;
+    }
+
+    // ---- Dynamic row creators ----
+    function addWorkRow(data = {}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const area = makeCellInput('e.g., Area A / West Parapet');
+      area.value = data.area || '';
+      tr.children[0].appendChild(area);
+
+      const desc = makeCellTextarea('Brief description');
+      desc.value = data.desc || '';
+      tr.children[1].appendChild(desc);
+
+      const sf = makeCellInput('e.g., 3,200');
+      sf.inputMode = 'numeric';
+      sf.value = data.sf || '';
+      tr.children[2].appendChild(sf);
+
+      const note = makeCellTextarea('Notes');
+      note.value = data.note || '';
+      tr.children[3].appendChild(note);
+
+      tr.children[4].appendChild(makeRemoveBtn());
+      workBody.appendChild(tr);
+    }
+
+    function addMatRow(data = {}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const mat = makeCellInput('e.g., 60-mil TPO / Walkpads / Edge Metal');
+      mat.value = data.mat || '';
+      tr.children[0].appendChild(mat);
+
+      const loc = makeCellInput('e.g., South Field / Penthouse');
+      loc.value = data.loc || '';
+      tr.children[1].appendChild(loc);
+
+      tr.children[2].appendChild(makeRemoveBtn());
+      matBody.appendChild(tr);
+    }
+
+    function addEquipRow(data = {}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const item = makeCellInput('Forklift / Dumpster / Delivery');
+      item.value = data.item || '';
+      tr.children[0].appendChild(item);
+
+      const desc = makeCellTextarea('Details');
+      desc.value = data.desc || '';
+      tr.children[1].appendChild(desc);
+
+      const on = makeCellInput('08:30');
+      on.value = data.on || '';
+      tr.children[2].appendChild(on);
+
+      const off = makeCellInput('15:00');
+      off.value = data.off || '';
+      tr.children[3].appendChild(off);
+
+      tr.children[4].appendChild(makeRemoveBtn());
+      equipBody.appendChild(tr);
+    }
+
+    function addIssueRow(data = {}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td><td class="p-2"></td>';
+      const type = makeSelect([
+        'Weather',
+        'Material',
+        'Coordination',
+        'Safety',
+        'QA/QC',
+        'Owner-direction',
+        'Other'
+      ]);
+      type.value = data.type || '';
+      tr.children[0].appendChild(type);
+
+      const desc = makeCellTextarea('What happened?');
+      desc.value = data.desc || '';
+      tr.children[1].appendChild(desc);
+
+      const loc = makeCellInput('Where on the roof?');
+      loc.value = data.loc || '';
+      tr.children[2].appendChild(loc);
+
+      const res = makeCellTextarea('Resolution or action needed');
+      res.value = data.res || '';
+      tr.children[3].appendChild(res);
+
+      tr.children[4].appendChild(makeRemoveBtn());
+      issueBody.appendChild(tr);
+    }
+
+    // Add-row buttons
+    document.getElementById('addWorkRow').addEventListener('click', () => {
+      addWorkRow();
+      saveDraftToLocal();
+    });
+    document.getElementById('addMatRow').addEventListener('click', () => {
+      addMatRow();
+      saveDraftToLocal();
+    });
+    document.getElementById('addEquipRow').addEventListener('click', () => {
+      addEquipRow();
+      saveDraftToLocal();
+    });
+    document.getElementById('addIssueRow').addEventListener('click', () => {
+      addIssueRow();
+      saveDraftToLocal();
+    });
+
+    // Seed one empty row for each section
+    addWorkRow();
+    addMatRow();
+    addEquipRow();
+    addIssueRow();
+
+    // ---- Local storage ----
+    const FORM_KEY = 'roofing_daily_report_draft_v1';
+
+    function getTableData(tbody, schema) {
+      const rows = [];
+      [...tbody.children].forEach(tr => {
+        const obj = {};
+        schema.forEach((field, idx) => {
+          const cell = tr.children[idx].firstElementChild;
+          obj[field] = cell ? cell.value || '' : '';
+        });
+        rows.push(obj);
+      });
+      return rows;
+    }
+
+    function saveDraftToLocal() {
+      const data = {
+        projectName: projectName.value,
+        projectAddress: projectAddress.value,
+        date: dateEl.value,
+        weather: weather.value,
+        temp: temp.value,
+        crewCount: crewCount.value,
+        startTime: startTime.value,
+        endTime: endTime.value,
+        work: getTableData(workBody, ['area', 'desc', 'sf', 'note']),
+        materials: getTableData(matBody, ['mat', 'loc']),
+        equipment: getTableData(equipBody, ['item', 'desc', 'on', 'off']),
+        issues: getTableData(issueBody, ['type', 'desc', 'loc', 'res']),
+        toolboxTalk: toolboxTalk.value,
+        ppe: ppe.value,
+        incidents: incidents.value,
+        housekeeping: housekeeping.value,
+        comments: comments.value
+      };
+      localStorage.setItem(FORM_KEY, JSON.stringify(data));
+      flashStatus('Draft saved to this device.');
+    }
+
+    function loadDraftFromLocal() {
+      const raw = localStorage.getItem(FORM_KEY);
+      if (!raw) return;
+      try {
+        const d = JSON.parse(raw);
+        projectName.value = d.projectName || '';
+        projectAddress.value = d.projectAddress || '';
+        dateEl.value = d.date || '';
+        weather.value = d.weather || '';
+        temp.value = d.temp || '';
+        crewCount.value = d.crewCount || '';
+        startTime.value = d.startTime || '';
+        endTime.value = d.endTime || '';
+
+        workBody.innerHTML = '';
+        (d.work || []).forEach(r => addWorkRow(r));
+        if ((d.work || []).length === 0) addWorkRow();
+
+        matBody.innerHTML = '';
+        (d.materials || []).forEach(r => addMatRow(r));
+        if ((d.materials || []).length === 0) addMatRow();
+
+        equipBody.innerHTML = '';
+        (d.equipment || []).forEach(r => addEquipRow(r));
+        if ((d.equipment || []).length === 0) addEquipRow();
+
+        issueBody.innerHTML = '';
+        (d.issues || []).forEach(r => addIssueRow(r));
+        if ((d.issues || []).length === 0) addIssueRow();
+
+        toolboxTalk.value = d.toolboxTalk || '';
+        ppe.value = d.ppe || '';
+        incidents.value = d.incidents || '';
+        housekeeping.value = d.housekeeping || '';
+        comments.value = d.comments || '';
+
+        flashStatus('Draft loaded from this device.');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    document.getElementById('saveLocal').addEventListener('click', saveDraftToLocal);
+    window.addEventListener('beforeunload', saveDraftToLocal);
+    loadDraftFromLocal();
+
+    // ---- Export JSON ----
+    document.getElementById('exportJson').addEventListener('click', () => {
+      saveDraftToLocal();
+      const blob = new Blob([localStorage.getItem(FORM_KEY) || '{}'], {
+        type: 'application/json'
+      });
+      const a = document.createElement('a');
+      const dt = new Date().toISOString().slice(0, 10);
+      a.href = URL.createObjectURL(blob);
+      a.download = `roofing_report_${dateEl.value || dt}.json`;
+      a.click();
+    });
+
+    // ---- Clear All / Reset ----
+    function clearAll() {
+      if (!confirm('Delete all entries and reset the form? This will also clear the saved draft on this device.'))
+        return;
+      try {
+        localStorage.removeItem(FORM_KEY);
+      } catch (e) {}
+      form.reset();
+      workBody.innerHTML = '';
+      matBody.innerHTML = '';
+      equipBody.innerHTML = '';
+      issueBody.innerHTML = '';
+      addWorkRow();
+      addMatRow();
+      addEquipRow();
+      addIssueRow();
+      flashStatus('All fields cleared and draft removed.');
+    }
+    document.getElementById('clearAll').addEventListener('click', clearAll);
+
+    // ---- EmailJS ----
+    window.EMAILJS_SERVICE_ID = window.EMAILJS_SERVICE_ID || '';
+    window.EMAILJS_TEMPLATE_ID = window.EMAILJS_TEMPLATE_ID || '';
+    window.EMAILJS_PUBLIC_KEY = window.EMAILJS_PUBLIC_KEY || '';
+
+    if (window.EMAILJS_PUBLIC_KEY) {
+      emailjs.init(window.EMAILJS_PUBLIC_KEY);
+    }
+
+    sendBtn.addEventListener('click', async () => {
+      const to = emailInput.value.trim();
+      if (!to) {
+        flashStatus('Enter a recipient email.', false);
+        return;
+      }
+      saveDraftToLocal();
+      const data = JSON.parse(localStorage.getItem(FORM_KEY) || '{}');
+      const summary = makePlainTextSummary(data);
+
+      if (
+        window.EMAILJS_SERVICE_ID &&
+        window.EMAILJS_TEMPLATE_ID &&
+        window.EMAILJS_PUBLIC_KEY
+      ) {
+        try {
+          await emailjs.send(window.EMAILJS_SERVICE_ID, window.EMAILJS_TEMPLATE_ID, {
+            to_email: to,
+            subject: `Daily Roofing Report – ${data.projectName || ''} – ${data.date || ''}`,
+            message: summary
+          });
+          flashStatus('Email sent via EmailJS.');
+        } catch (err) {
+          console.error(err);
+          flashStatus(
+            'EmailJS error. Check configuration or use your mail client.',
+            false
+          );
+          mailtoFallback(to, summary);
+        }
+      } else {
+        mailtoFallback(to, summary);
+      }
+    });
+
+    function mailtoFallback(to, body) {
+      const subject = encodeURIComponent(
+        `Daily Roofing Report – ${projectName.value} – ${dateEl.value}`
+      );
+      const b = encodeURIComponent(body);
+      window.location.href = `mailto:${encodeURIComponent(
+        to
+      )}?subject=${subject}&body=${b}`;
+      flashStatus('Opening your mail app with the report.');
+    }
+
+    function rowsToText(rows, headers) {
+      return (rows || [])
+        .map(r =>
+          headers.map(h => `${h}: ${r[h] || ''}`).join(' | ')
+        )
+        .join('\n');
+    }
+
+    function makePlainTextSummary(d) {
+      return [
+        `Project: ${d.projectName || ''}`,
+        `Address: ${d.projectAddress || ''}`,
+        `Date: ${d.date || ''}`,
+        `Weather: ${d.weather || ''} | Temp: ${d.temp || ''}`,
+        `Crew Members: ${d.crewCount || ''} | Start: ${
+          d.startTime || ''
+        } | End: ${d.endTime || ''}`,
+        '',
+        'Work Performed:',
+        rowsToText(d.work, ['area', 'desc', 'sf', 'note']),
+        '',
+        'Materials Installed:',
+        rowsToText(d.materials, ['mat', 'loc']),
+        '',
+        'Equipment & Deliveries:',
+        rowsToText(d.equipment, ['item', 'desc', 'on', 'off']),
+        '',
+        'Issues / Delays:',
+        rowsToText(d.issues, ['type', 'desc', 'loc', 'res']),
+        '',
+        `Toolbox Talk: ${d.toolboxTalk || ''} | PPE: ${
+          d.ppe || ''
+        } | Housekeeping: ${d.housekeeping || ''}`,
+        `Incidents: ${d.incidents || ''}`,
+        '',
+        `Notes: ${d.comments || ''}`
+      ].join('\n');
+    }
+
+    // ---- Print / PDF ----
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      saveDraftToLocal();
+      const data = JSON.parse(localStorage.getItem(FORM_KEY) || '{}');
+      const printable = window.open('', '_blank');
+      printable.document.write(
+        "<!doctype html><html><head><meta charset='utf-8'><title>Report</title>" +
+          "<style>body{font-family:ui-sans-serif,system-ui,-apple-system;padding:24px;color:#111827}" +
+          "h1{font-size:20px;margin:0 0 12px}h2{font-size:16px;margin:18px 0 8px}" +
+          "table{width:100%;border-collapse:collapse;font-size:12px}" +
+          "th,td{border:1px solid #e5e7eb;padding:6px;text-align:left;vertical-align:top}" +
+          ".meta{margin-bottom:8px}</style></head><body>"
+      );
+      printable.document.write('<h1>Daily Roofing Progress Report</h1>');
+      printable.document.write(
+        "<div class='meta'><strong>Project:</strong> " +
+          escapeHtml(data.projectName || '') +
+          " &nbsp; <strong>Date:</strong> " +
+          escapeHtml(data.date || '') +
+          '</div>'
+      );
+      printable.document.write(
+        "<div class='meta'><strong>Address:</strong> " +
+          escapeHtml(data.projectAddress || '') +
+          '</div>'
+      );
+      printable.document.write(
+        "<div class='meta'><strong>Weather:</strong> " +
+          escapeHtml(data.weather || '') +
+          " &nbsp; <strong>Temp:</strong> " +
+          escapeHtml(data.temp || '') +
+          '</div>'
+      );
+      printable.document.write(
+        "<div class='meta'><strong>Crew Members:</strong> " +
+          escapeHtml(data.crewCount || '') +
+          " &nbsp; <strong>Hours:</strong> " +
+          escapeHtml(data.startTime || '') +
+          '–' +
+          escapeHtml(data.endTime || '') +
+          '</div>'
+      );
+
+      function tableSection(title, headers, rows, keys) {
+        printable.document.write(
+          `<h2>${title}</h2><table><thead><tr>` +
+            headers.map(h => `<th>${h}</th>`).join('') +
+            '</tr></thead><tbody>'
+        );
+        (rows || []).forEach(r => {
+          printable.document.write(
+            '<tr>' +
+              keys.map(k => `<td>${escapeHtml(r[k] || '')}</td>`).join('') +
+              '</tr>'
+          );
+        });
+        printable.document.write('</tbody></table>');
+      }
+
+      tableSection(
+        'Work Performed',
+        ['Area / Roof Section', 'Description', 'Square Footage', 'Notes'],
+        data.work,
+        ['area', 'desc', 'sf', 'note']
+      );
+      tableSection(
+        'Materials Installed',
+        ['Material Type', 'Location on Roof'],
+        data.materials,
+        ['mat', 'loc']
+      );
+      tableSection(
+        'Equipment and Deliveries',
+        ['Item', 'Description', 'Time Onsite', 'Time Offsite'],
+        data.equipment,
+        ['item', 'desc', 'on', 'off']
+      );
+      tableSection(
+        'Issues / Delays',
+        ['Issue Type', 'Description', 'Location', 'Resolution / Action Needed'],
+        data.issues,
+        ['type', 'desc', 'loc', 'res']
+      );
+
+      printable.document.write('<h2>Safety and Site Conditions</h2>');
+      printable.document.write(
+        "<div class='meta'><strong>Toolbox Talk:</strong> " +
+          escapeHtml(data.toolboxTalk || '') +
+          " &nbsp; <strong>PPE:</strong> " +
+          escapeHtml(data.ppe || '') +
+          " &nbsp; <strong>Housekeeping:</strong> " +
+          escapeHtml(data.housekeeping || '') +
+          '</div>'
+      );
+      printable.document.write(
+        "<div class='meta'><strong>Incidents / Near Misses:</strong> " +
+          escapeHtml(data.incidents || '') +
+          '</div>'
+      );
+      printable.document.write(
+        '<h2>Superintendent Notes</h2><div>' +
+          escapeHtml(data.comments || '') +
+          '</div>'
+      );
+      printable.document.write('</body></html>');
+      printable.document.close();
+      printable.focus();
+      printable.print();
+    });
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[s]));
+    }
+  </script>
+</body>
+</html>
