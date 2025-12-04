@@ -205,6 +205,7 @@
         <div class="flex gap-2">
           <button type="button" id="saveLocal" class="px-4 py-2 rounded-lg bg-gray-800 text-white">Save Draft (Device)</button>
           <button type="button" id="exportJson" class="px-4 py-2 rounded-lg bg-gray-200">Export JSON</button>
+          <button type="button" id="clearAll" class="px-4 py-2 rounded-lg bg-red-600 text-white">Delete All / Reset</button>
         </div>
         <div class="flex gap-2">
           <input id="recipientEmail" type="email" placeholder="Send to email (optional)" class="flex-1 sm:w-64 rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -392,6 +393,32 @@
     // ---------- Export JSON ----------
     document.getElementById('exportJson').addEventListener('click', ()=>{
       saveDraftToLocal();
+      const blob = new Blob([localStorage.getItem(FORM_KEY)||'{}'], {type:'application/json'});
+      const a = document.createElement('a');
+      const dt = new Date().toISOString().slice(0,10);
+      a.href = URL.createObjectURL(blob);
+      a.download = `roofing_report_${date.value||dt}.json`;
+      a.click();
+    });
+
+    // ---------- Clear All / Reset ----------
+    function clearAll(){
+      if(!confirm('Delete all entries and reset the form? This will also clear the saved draft on this device.')) return;
+      try { localStorage.removeItem(FORM_KEY); } catch(e){}
+      // Reset basic fields
+      form.reset();
+      // Rebuild dynamic tables to a single empty row each
+      workBody.innerHTML = '';
+      matBody.innerHTML = '';
+      equipBody.innerHTML = '';
+      issueBody.innerHTML = '';
+      addWorkRow();
+      addMatRow();
+      addEquipRow();
+      addIssueRow();
+      flashStatus('All fields cleared and draft removed.');
+    }
+    document.getElementById('clearAll').addEventListener('click', clearAll);
       const blob = new Blob([localStorage.getItem(FORM_KEY)||'{}'], {type:'application/json'});
       const a = document.createElement('a');
       const dt = new Date().toISOString().slice(0,10);
